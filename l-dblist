@@ -1,0 +1,27 @@
+#!/bin/bash
+
+export SUDO_PROMPT=$'\n''User %u is asking for %p'"'s"' password.'$'\n''It is required to run a task as user %U'$'\n''Enter Password for %p : '
+
+sudo -u postgres psql -c 'select datname from pg_database'
+
+
+exit
+
+# mysql: SHOW TABLES
+postgresql: \d
+postgresql: SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';
+
+#mysql: SHOW DATABASES
+postgresql: \l
+postgresql: SELECT datname FROM pg_database;
+
+#mysql: SHOW COLUMNS
+postgresql: \d table
+postgresql: SELECT column_name FROM information_schema.columns WHERE table_name ='table';
+
+#mysql: DESCRIBE TABLE
+postgresql: \d+ table
+postgresql: SELECT column_name FROM information_schema.columns WHERE table_name ='table';
+
+
+http://www.thegeekstuff.com/2009/04/15-practical-postgresql-database-adminstration-commands/

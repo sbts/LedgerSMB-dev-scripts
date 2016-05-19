@@ -1,0 +1,8 @@
+#!/bin/bash
+
+export SUDO_PROMPT=$'\n''User %u is asking for %p'"'s"' password.'$'\n''It is required to run a task as user %U'$'\n''Enter Password for %p : '
+
+read -e -p "enter new password for admin user 'lsmb_dbadmin'" PW
+
+sudo -u postgres psql -c "alter role lsmb_dbadmin with password '$PW';"
+

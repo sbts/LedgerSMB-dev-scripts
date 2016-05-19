@@ -1,0 +1,31 @@
+#!/bin/bash
+
+############
+# Readline History Functions
+############
+    EnableHistory() { # Requires $1 to be a history filename
+        HISTFILE="$1"
+#        shopt -s histappend
+        set -o history
+    }
+        
+    AddHistory() { # requires $1 to be line to add to history
+        history -s "$@"; # store in history array
+        history -a; #history -n; # append to history file, then reread any new entries # the reread may not be required.
+    }
+    
+ 
+
+
+clear;
+
+
+#echo F=$HISTFILE
+#echo 
+cd `git rev-parse --show-toplevel`
+
+history -c;
+EnableHistory /tmp/lsmb-find.history
+read -e -p 'Enter Search Key. (History Enabled) : ' SearchKey;
+
+grep -n -i --color=auto --exclude-dir=locale --exclude-dir=dojo -r "$SearchKey" **

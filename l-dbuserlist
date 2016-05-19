@@ -1,0 +1,140 @@
+#!/bin/bash
+
+export SUDO_PROMPT=$'\n''User %u is asking for %p'"'s"' password.'$'\n''It is required to run a task as user %U'$'\n''Enter Password for %p : '
+
+Qry=`
+cat <<-EOF
+	SELECT u.usename AS "User name",
+	  u.usesysid AS "User ID",
+	  CASE WHEN u.usesuper AND u.usecreatedb THEN CAST('superuser, create
+	database' AS pg_catalog.text)
+	       WHEN u.usesuper THEN CAST('superuser' AS pg_catalog.text)
+	       WHEN u.usecreatedb THEN CAST('create database' AS
+	pg_catalog.text)
+	       ELSE CAST('' AS pg_catalog.text)
+	  END AS "Attributes"
+	FROM pg_catalog.pg_user u
+	ORDER BY 1;
+
+EOF
+`
+
+#	SELECT u.usename AS "User name"  WHEN u.usecreatedb
+#Qry_Create_DB=`
+#cat <<-EOF
+#	SELECT u.usename AS "User name"
+#	FROM pg_catalog.pg_user u WHERE u.usecreatedb
+#	ORDER BY 1;
+#
+#EOF
+#`
+Qry_Create_DB='copy (SELECT u.usename AS "User name" FROM pg_catalog.pg_user u WHERE u.usecreatedb ORDER BY 1) to stdout'
+#create database
+
+sudo -u postgres psql -c "$Qry_Create_DB"
+
+
+exit
+
+# mysql: SHOW TABLES
+postgresql: \d
+postgresql: SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';
+
+#mysql: SHOW DATABASES
+postgresql: \l
+postgresql: SELECT datname FROM pg_database;
+
+#mysql: SHOW COLUMNS
+postgresql: \d table
+postgresql: SELECT column_name FROM information_schema.columns WHERE table_name ='table';
+
+#mysql: DESCRIBE TABLE
+postgresql: \d+ table
+postgresql: SELECT column_name FROM information_schema.columns WHERE table_name ='table';
+
+
+http://www.thegeekstuff.com/2009/04/15-practical-postgresql-database-adminstration-commands/
+
+
+
+
+
+
+
+
+
+
+
+
+CREATE OR REPLACE FUNCTION fnsomefunc(numtimes integer, msg text)
+    RETURNS text AS
+$$
+DECLARE
+    strresult text;
+BEGIN
+    strresult := '';
+    IF numtimes > 0 THEN
+        FOR i IN 1 .. numtimes LOOP
+            strresult := strresult || msg || E'\r\n';
+        END LOOP;
+    END IF;
+    RETURN strresult;
+END;
+$$
+LANGUAGE 'plpgsql' IMMUTABLE
+SECURITY DEFINER
+  COST 10;
+
+
+--To call the function we do this and it returns ten hello there's with '
+carriage returns as a single text field.
+SELECT fnsomefunc(10, 'Hello there');
+
+
+
+
+
+
+
+
+
+http://www.postgresql.org/docs/9.1/static/sql-createfunction.html
+
+#So I guess we really would need to add a SELECT + EXECUTE get_superusers role that is used as the DEFINER for our EXECUTE only role
+# select on specific tables.
+
+CREATE OR REPLACE FUNCTION get_superusers()
+RETURNS TABLE (name TEXT)
+#LANGUAGE plperlu
+LANGUAGE PL/pgSQL
+SECURITY DEFINER
+AS $bc$
+ 
+use strict;
+use warnings;
+ 
+## Query the DB
+my $SQL = q{
+    copy (
+        SELECT u.usename AS "User name" FROM pg_catalog.pg_user u WHERE u.usecreatedb ORDER BY 1
+    ) to stdout
+};
+
+## Run the query, pull back the first row, as well as the allowed column value
+my $rv = spi_exec_prepared($SQL, 0);
+
+## Did we find anything? If not, simply return undef
+if (! $rv->{processed}) {
+   return undef;
+}
+
+## Throw an exception if we are not allowed to view this row
+if (! $allowed) {
+   die qq{Sorry, you are not allowed to view the Super User List!\n};
+}
+ 
+## Return the requested data
+return_next($row);
+ 
+$bc$;
+CREATE FUNCTION

@@ -1,0 +1,22 @@
+#!/bin/bash
+
+clear;
+
+setD() { 
+    Dir=${1:-unknowDIR}; 
+}
+
+setD `git rev-parse --show-toplevel`
+
+if [[ ! -d "$Dir/locale" ]]; then
+    printf "\n\nERROR: you don't seem to be inside a LedgerSMB dir tree\n\n"
+    exit
+fi
+
+if [[ -z $1 ]]; then
+    read -p 'enter pattern to search for: ' pattern
+else
+    pattern="$@"
+fi
+
+grep -i -rn --include=*.p[lm] --exclude-dir=*/doc/ --exclude-dir=*/t/ --exclude-dir=blib "$pattern" $Dir/**

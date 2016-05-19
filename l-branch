@@ -1,0 +1,58 @@
+#!/bin/bash
+
+
+DirName=`git rev-parse --show-toplevel`
+DirName="${DirName%/LedgerSMB}"
+DirName="${DirName##*/}"
+CurrentBranch=`git rev-parse --abbrev-ref HEAD`
+COLUMNS=`tput cols`
+(( NumCols=(4* ((COLUMNS-5)/80) ) ))
+(( ColWidth = (COLUMNS-5)/ NumCols ))
+echo
+echo "====================================================="
+echo "====================================================="
+echo "==               Available Branches                =="
+#printf "==  %-*s%-*s%-*s" $ColWidth "master" "1.4" "1.5";
+#echo
+echo "=="
+i=''; NL='';
+while read tag; do
+    if (( i++ % NumCols == 0 )); then printf "$NL==  "; fi
+    printf "%-*s" $ColWidth "$tag"
+    NL='\n'
+done < <( printf "master\n1.4\n1.5\n" )
+echo
+echo "=="
+i=''; NL='';
+while read tag; do
+    if (( i++ % NumCols == 0 )); then printf "$NL==  "; fi
+    printf "%-*s" $ColWidth "$tag"
+    NL='\n'
+done < <( git tag -l 1.4* --sort=version:refname; echo )
+echo
+echo "=="
+i=''; NL='';
+while read tag; do
+    if (( i++ % NumCols == 0 )); then printf "$NL==  "; fi
+    printf "%-*s" $ColWidth "$tag"
+    NL='\n'
+done < <( git tag -l 1.5* --sort=version:refname; echo )
+echo
+echo "=="
+echo "====================================================="
+echo "====================================================="
+echo
+
+    read -e -i"$CurrentBranch" -p 'Enter existing branch name: ' oldBranch
+
+    DirName="${DirName#$oldBranch-}"
+
+    read -e -i"$oldBranch-$DirName" -p 'Enter new branch name: ' newBranch
+
+     git checkout -b "$newBranch" origin/"$oldBranch"
+
+echo
+echo "====================================================="
+echo "====================================================="
+echo
+

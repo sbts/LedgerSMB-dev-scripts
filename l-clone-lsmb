@@ -1,0 +1,44 @@
+#!/bin/bash
+
+clear;
+
+setD() {
+    Dir=${1:-unknowDIR}; 
+}
+
+setD `git rev-parse --show-toplevel`
+
+case $USER in
+    'dcg') default_URI='https://github.com/sbts/LedgerSMB.git';;
+    *) default_URI='https://github.com/ledgersmb/LedgerSMB.git';;
+esac
+
+default_BRANCH='master'
+default_TARGET_DIR="${default_BRANCH}-issue-"
+
+if [[ -d "$Dir" ]]; then
+    printf "\n\nERROR: you can't clone into a git repo\n\n"
+    exit
+fi
+
+if [[ -z $1 ]] || [[ $1 == '-' ]]; then
+    read -e -i "$default_URI"  -p 'enter URI to clone from: ' URI
+else
+    URI="$1"
+fi
+shift
+
+if [[ -z $1 ]] || [[ $URI == '-' ]]; then
+    read -e -i "$default_BRANCH" -p 'enter Branch Name to checkout: ' BRANCH
+else
+    BRANCH="$1"
+fi
+
+if [[ -z $1 ]] || [[ $1 == '-' ]]; then
+    read -e -i "$default_TARGET_DIR" -p 'enter Target Dir name to clone to: ' TARGET_DIR
+else
+    TARGET_DIR="$1"
+fi
+shift
+
+git clone --branch $BRANCH --recursive --config remote.upstream.url=https://github.com/ledgersmb/LedgerSMB --config 'remote.upstream.fetch=+refs/heads/*:refs/remotes/upstream/*' -- $URI $TARGET_DIR
