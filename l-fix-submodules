@@ -1,0 +1,61 @@
+#!/bin/bash
+
+clear;
+
+setD() { 
+    Dir=${1:-unknowDIR}; 
+}
+
+setD `git rev-parse --show-toplevel`
+
+if [[ ! -d "$Dir/locale" ]]; then
+    printf "\n\nERROR: you don't seem to be inside a LedgerSMB dir tree\n\n"
+    exit
+fi
+
+
+
+#https://vector.im/develop/#/room/!qyoLumPqusaXqFJNyK:matrix.org/$1463855562363495UBgFA:matrix.org
+
+cat <<EOF
+    This script resolves errors when merging submodules after their dir location changed
+    The error you would have seen after trying to merge from upstream would look like.....
+
+        Unmerged paths:
+          (use "git add <file>..." to mark resolution)
+
+        added by us:     UI/js-src/dijit
+        added by us:     UI/js-src/dojo
+        added by us:     UI/js-src/util
+
+    and a 'git diff' would return
+
+        * Unmerged path UI/js-src/dijit
+        * Unmerged path UI/js-src/dojo
+        * Unmerged path UI/js-src/util
+
+    and a 'git submodule update'
+        Skipping unmerged submodule UI/js-src/dijit
+        Skipping unmerged submodule UI/js-src/dojo
+        Skipping unmerged submodule UI/js-src/util
+
+
+    ========================
+    To fix this we will try and run the following
+        git rm --cached UI/js-src/digit
+        git rm --cached UI/js-src/dojo
+        git rm --cached UI/js-src/util/
+        git submodule init
+        git submodule update
+
+
+EOF
+
+read -p "Press enter to run the commands"
+
+git rm --cached UI/js-src/digit
+git rm --cached UI/js-src/dojo
+git rm --cached UI/js-src/util/
+git submodule init
+git submodule update
+
