@@ -49,7 +49,12 @@ echo
 
     read -e -i"$oldBranch-$DirName" -p 'Enter new branch name: ' newBranch
 
-     git checkout -b "$newBranch" origin/"$oldBranch"
+    if [[ $oldBranch =~ '/' ]]; then
+        git checkout -b "$newBranch" "$oldBranch"
+        git branch --set-upstream-to origin
+    else
+        git checkout -b "$newBranch" origin/"$oldBranch"
+    fi
 
 echo
 echo "====================================================="
