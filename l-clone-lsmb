@@ -6,7 +6,7 @@ setD() {
     Dir=${1:-unknowDIR}; 
 }
 
-setD `git rev-parse --show-toplevel`
+setD `git rev-parse --show-toplevel 2>/dev/null`
 
 case $USER in
     'dcg') default_URI='https://github.com/sbts/LedgerSMB.git';;
