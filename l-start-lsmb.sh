@@ -352,10 +352,10 @@ fi
 export ConfigFile="$confFile"
 # Start Starman on the requested port or 8080 by default
 echo
-echo; echo starman --user $User --group $Group $lib --listen $PORT $workers $maxRequests $preloadApp $logFile $pidFile $opts tools/starman.psgi; echo
+echo; echo starman --user $User --group $Group $lib --listen $PORT $workers $maxRequests $preloadApp $logFile $pidFile $develop $opts tools/starman.psgi; echo
 echo " starting Starman server for LedgerSMB with ConfigFile: $ConfigFile"
 echo
-starman --user $User --group $Group $lib --listen $PORT $workers $maxRequests $preloadApp $logFile $pidFile $develop $opts tools/starman.psgi
+           starman --user $User --group $Group $lib --listen $PORT $workers $maxRequests $preloadApp $logFile $pidFile $develop $opts tools/starman.psgi
 
 # ## info on running plack directly via systemd and other.
 # ## also info on an available debugger for plack
