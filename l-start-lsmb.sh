@@ -246,7 +246,7 @@ GetConfig() {
             ## 
             ## 
                 if [[ -n $OPTARG ]]; then
-                    logFile="-error-log $OPTARG"
+                    logFile="--error-log $OPTARG"
                 fi
             ;;
         O)  ## argument : -O : Additional Options for starman and / or plackup
