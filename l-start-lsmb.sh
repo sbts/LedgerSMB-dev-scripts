@@ -145,6 +145,10 @@ GetConfig() {
     if [[ -r lib/LedgerSMB.pm ]]; then
         libDir='lib';
         lib='-I lib' # If it's a new structure pass the lib dir to starman
+        # check if we have a an old/lib dir and include it.
+        if [[ -d lib/old ]]; then
+            lib+=' -I old/lib'
+        fi
     else
         libDir='.'
         lib=''
