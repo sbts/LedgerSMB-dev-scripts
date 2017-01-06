@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# https://developer.github.com/v3/git/tags/
+
+CurrentVersion="$1"
+
+curl -s "https://api.github.com/repos/ledgersmb/LedgerSMB/tags" | awk '/name": "'"$CurrentVersion"'/ {gsub("[\",]",""); print $2; exit}'
