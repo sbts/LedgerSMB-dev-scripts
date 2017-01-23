@@ -146,7 +146,7 @@ GetConfig() {
         libDir='lib';
         lib='-I lib' # If it's a new structure pass the lib dir to starman
         # check if we have a an old/lib dir and include it.
-        if [[ -d lib/old ]]; then
+        if [[ -d old/lib ]]; then
             lib+=' -I old/lib'
         fi
     else
