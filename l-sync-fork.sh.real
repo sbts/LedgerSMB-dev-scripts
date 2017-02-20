@@ -29,6 +29,12 @@ Error() {
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	%%                                                    %%$(printf "\r%% %s" "$1")
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+	Be aware 
+	    - I may have left changes stashed via "git stash"
+	    - You may not be in the expected branch.
+	        run "git status" to confirm"
+	
 EOF
     exit 1
 }
@@ -69,16 +75,26 @@ CurrentBranch=`git rev-parse --abbrev-ref HEAD`
 # at least if we use "stash save --all" a manual pop would be enough to restore state
 #stash=`git stash create`
 unset stash
+
+echo "Stashing any uncommited changes"
 git stash save --all "automatic stash while running 'sync-fork.sh'"
 
-git checkout master || Error "Checking out Master."
-
+echo "fetching upstream"
 git fetch upstream || Error "Fetching Upstream."
 
+echo "syncing master"
+git checkout master || Error "Checking out Master."
 git merge upstream/master || Error "Merging upstream/master with local /master"
 
+echo "syncing 1.5"
+git checkout 1.5 || Error "Checking out 1.5."
+git merge upstream/1.5 || Error "Merging upstream/1.5 with local /1.5"
+
+echo "returning you to your working branch"
+echo "checking out $CurrentBranch"
 git checkout "$CurrentBranch" || Error "Checking out $CurrentBranch."
 
+echo "Popping any edits we stashed"
 git stash pop $stash
 
 cat <<EOF
@@ -92,7 +108,8 @@ cat <<EOF
     If you are working on a branch then you will also need to do something like
         git merge upstream/master
       or
-        git merge upstream/1.4
+        git merge upstream/1.5
+    Both of which have already been done for you.
 
 EOF
 
