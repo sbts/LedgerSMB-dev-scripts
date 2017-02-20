@@ -2,6 +2,8 @@
 
 # https://developer.github.com/v3/git/tags/
 
-CurrentVersion="$1"
+# If you pass in no arguments it will return the latest tag starting with a number.
+# otherwise pass in a regex that will partially match a version string
+CurrentVersion="${1:-[0-9]}"
 
 curl -s "https://api.github.com/repos/ledgersmb/LedgerSMB/tags" | awk '/name": "'"$CurrentVersion"'/ {gsub("[\",]",""); print $2; exit}'
