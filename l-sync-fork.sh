@@ -84,11 +84,13 @@ git fetch upstream || Error "Fetching Upstream."
 
 echo "syncing master"
 git checkout master || Error "Checking out Master."
-git merge upstream/master || Error "Merging upstream/master with local /master"
+git merge upstream/master || Error "Merging upstream/master with local /master" || Error "Merging master";
+git push
 
 echo "syncing 1.5"
 git checkout 1.5 || Error "Checking out 1.5."
-git merge upstream/1.5 || Error "Merging upstream/1.5 with local /1.5"
+git merge upstream/1.5 || Error "Merging upstream/1.5 with local /1.5" || Error "Merging 1.5";
+git push
 
 echo "returning you to your working branch"
 echo "checking out $CurrentBranch"
