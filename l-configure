@@ -55,7 +55,7 @@ write_config() {
 
     cat <<-EOF
 	[debug]
-	dojo_built = 0
+	dojo_built = $dojo_built
 	
 	[main]
 	tempdir = $tempdir
@@ -142,21 +142,11 @@ AskUser() {
 	==     ${Title:0:40}      ==
 	=======================================================
 	=======================================================
-	      RepoDir:	"$RepoDir"
-	CurrentBranch:	"$"
-	   ConfigFile:	"${RepoDir}/${ConfigFile}"
-	      Version:	"${Version}"
-	   dojo_built:	"$"
-	      tempdir:	"$"
-	  cookie_name:	"$"
-	   default_db:	"$"
-	         port:	"$port"
-	    otherOpts:	"${otherOpts}"
-	:	"${_}"
+	
 	EOF
 
     read -e -i"$ConfigFile"  -p 'Enter :            Config File Name: '   ConfigFile
-    read -e -i"$dojo_built"  -p '              Use Built Dojo? [y/N]: '   dojo_built_
+    read -sn1                -p '              Use Built Dojo? [Y/n]: '   dojo_built_; echo "${dojo_built_:=Y}"
     read -e -i"$tempdir"     -p 'Enter :                     tempdir: '      tempdir
     read -e -i"$cookie_name" -p 'Enter :                 cookie_name: '  cookie_name
     read -e -i"$default_db"  -p 'Enter :        default Company Name: '   default_db
@@ -165,9 +155,9 @@ AskUser() {
     read -e -i"$LogFile"     -p 'Enter :                LogFile Name: '      LogFile
     read -e -i"$otherOpts"   -p 'Enter : other Starman/Plack Options: '    otherOpts
 
-    if [[ 'yY' =~ ${dojo_built_:=n} ]]; then
+    if [[ 'yY' =~ ${dojo_built_} ]]; then
         dojo_built=1;
-        if [[ ! -r /UI/js-src/dojo/dojo.js ]]; then
+        if [[ ! -r "${RepoDir}/UI/js/lsmb/main.js" ]] || [[ ! -r "${RepoDir}/UI/js/dojo/dojo.js" ]]; then
             dojo_built_='n';
             dojo_built='0';
             cat <<-EOF
@@ -187,8 +177,8 @@ AskUser() {
     else
         dojo_built=0;
     fi
-    if [[ 'yY' =~ ${dojo_built_:=n} ]] || [[ ! '1' == ${dojo_built:=0} ]]; then
-        if [[ ! -r /UI/js-src/dojo/dojo.js ]]; then
+    if [[ 'yY' =~ ${dojo_built_} ]] || [[ ! '1' == ${dojo_built:=0} ]]; then
+        if [[ ! -r "${RepoDir}/UI/js-src/dojo/dojo.js" ]]; then
             dojo_built_='n';
             dojo_built='0';
             cat <<-EOF
@@ -200,7 +190,7 @@ AskUser() {
 		**************************************************************
 		EOF
         fi
-
+    fi
 }
 
 
@@ -210,61 +200,4 @@ AskUser "Please Answer the following Questions."
 
 TellUser "Current Settings are"
 
-write_config
-
-
-
-
-
-
-exit
-
-#printf "==  %-*s%-*s%-*s" $ColWidth "master" "1.4" "1.5";
-#echo
-echo "=="
-i=''; NL='';
-while read tag; do
-    if (( i++ % NumCols == 0 )); then printf "$NL==  "; fi
-    printf "%-*s" $ColWidth "$tag"
-    NL='\n'
-done < <( printf "master\n1.4\n1.5\n" )
-echo
-echo "=="
-i=''; NL='';
-while read tag; do
-    if (( i++ % NumCols == 0 )); then printf "$NL==  "; fi
-    printf "%-*s" $ColWidth "$tag"
-    NL='\n'
-done < <( git tag -l 1.4* --sort=version:refname; echo )
-echo
-echo "=="
-i=''; NL='';
-while read tag; do
-    if (( i++ % NumCols == 0 )); then printf "$NL==  "; fi
-    printf "%-*s" $ColWidth "$tag"
-    NL='\n'
-done < <( git tag -l 1.5* --sort=version:refname; echo )
-echo
-echo "=="
-echo "====================================================="
-echo "====================================================="
-echo
-
-    read -e -i"$CurrentBranch" -p 'Enter existing branch name: ' oldBranch
-
-    DirName="${DirName#$oldBranch-}"
-
-    read -e -i"$oldBranch-$DirName" -p 'Enter new branch name: ' newBranch
-
-    if [[ $oldBranch =~ '/' ]]; then
-        git checkout -b "$newBranch" "$oldBranch"
-        git branch --set-upstream-to origin
-    else
-        git checkout -b "$newBranch" origin/"$oldBranch"
-    fi
-
-echo
-echo "====================================================="
-echo "====================================================="
-echo
-
+write_config | tee "${RepoDir}/${ConfigFile}"
