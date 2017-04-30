@@ -19,4 +19,12 @@ else
     pattern="$@"
 fi
 
-grep -i -rn --include=*.p[lm] --exclude-dir=js/ --exclude-dir=js-src/ --exclude-dir=*/doc/ --exclude-dir=*/t/ --exclude-dir=blib "$pattern" $Dir/**
+grep -i -rn \
+    --include=*.p[lm] \
+    --exclude-dir=js/ \
+    --exclude-dir=js-src/ \
+    --exclude-dir=*/doc/ \
+    --exclude-dir=*/t/ \
+    --exclude-dir=blib \
+    "$pattern" $Dir/** | \
+        sed "s|$Dir/||"
