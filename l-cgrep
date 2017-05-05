@@ -2,8 +2,8 @@
 
 clear;
 
-setD() { 
-    Dir=${1:-unknowDIR}; 
+setD() {
+    Dir=${1:-unknowDIR};
 }
 
 setD `git rev-parse --show-toplevel`
