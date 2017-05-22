@@ -43,8 +43,17 @@ if_MasterDir_CopyToNewDir() {
         done
         shopt -qu nocasematch
         NewDir="${CurrentDirPath%/*}/${branchType_}${issueNum_}${NewDir_}"
-        cp "$CurrentDirPath" "$NewDir"
-        cd "$NewDir"
+        cp -a "$CurrentDirPath" "$NewDir" \
+          && cd "$NewDir" \
+          || {
+            cat <<-EOF
+		
+		    Failed to create and cd to $NewDir
+		    EXITING NOW
+		
+		EOF
+            exit 1
+        }
     else
         echo "Not in master dir: Skip Copy"
     fi
