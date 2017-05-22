@@ -1,5 +1,56 @@
 #!/bin/bash
 
+if_MasterDir_CopyToNewDir() {
+    CurrentDirPath="`readlink -f .`"
+    if [[ "$CurrentDirPath" =~ /master$ ]]; then
+        shopt -qs nocasematch
+        local NewDir_ NewDir_stripped branchType_ issueNum_ issueNum_stripped K
+        while [[ -z $branchType_ ]]; do
+            read -rn1 -p 'Select Branch type { Enhancement | Feature | Issue | Other } [efIo]: ' branchType_
+            case $branchType_ in
+                'e') branchType_='enhancement-';;
+                'f') branchType_='feature-';;
+                'i') branchType_='issue-';;
+                'o') branchType_='other-';;
+                  *) branchType_='';;
+            esac
+            echo
+        done
+        if [[ "$branchType_" == 'issue-' ]]; then
+            while [[ -z $issueNum_ ]]; do
+                read -eri "$issueNum_stripped" -p 'Enter one or more Issue Numbers separated by _ chars: ' issueNum_
+                issueNum_stripped="${issueNum_//[\]\-a-zA-Z\!@#\$%\^&\*()[\{;:<>,.?\/~]/_}"
+                issueNum_="${issueNum_stripped//__/_}"
+                for i in {1..30}; do issueNum_="${issueNum_//__/_}"; done # crude hack to collapse sequences of _'s
+                if [[ -n "${issueNum_//_}" ]]; then
+                    read -n1 -p "is this '$issueNum_' correct? [y/N] " K
+                    if ! [[ 'Yy' =~ ${K:=n} ]]; then issueNum_=''; fi
+                    echo ""
+                fi
+            done
+            issueNum_+='-'
+        fi
+        while [[ -z $NewDir_ ]]; do
+            read -eri "$NewDir_stripped" -p 'Enter New Branch Name: ' NewDir_
+                NewDir_stripped="${NewDir_//[\]\!@#\$%\^&\*()[\{;:<>,.?\/~]/-}"
+                NewDir_="${NewDir_stripped//--/-}"
+                for i in {1..30}; do NewDir_="${NewDir_//--/-}"; done # crude hack to collapse sequences of -'s
+                if [[ -n "${NewDir_//-}" ]]; then
+                    read -n1 -p "is this '$NewDir_' correct? [y/N] " K
+                    if ! [[ 'Yy' =~ ${K:=n} ]]; then echo "Stomping on NewDir_"; NewDir_=''; fi
+                    echo ""
+                fi
+        done
+        shopt -qu nocasematch
+        NewDir="${CurrentDirPath%/*}/${branchType_}${issueNum_}${NewDir_}"
+        cp "$CurrentDirPath" "$NewDir"
+        cd "$NewDir"
+    else
+        echo "Not in master dir: Skip Copy"
+    fi
+}
+
+if_MasterDir_CopyToNewDir
 
 DirName=`git rev-parse --show-toplevel`
 DirName="${DirName%/LedgerSMB}"
