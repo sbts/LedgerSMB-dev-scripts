@@ -107,7 +107,7 @@ echo
 
     DirName="${DirName#$oldBranch-}"
 
-    read -e -i"$oldBranch-$DirName" -p 'Enter new branch name: ' newBranch
+    read -e -i"$DirName" -p 'Enter new branch name: ' newBranch
 
     if [[ $oldBranch =~ '/' ]]; then
         git checkout -b "$newBranch" "$oldBranch"
