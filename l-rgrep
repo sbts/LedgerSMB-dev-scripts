@@ -24,4 +24,4 @@ else
     pattern="$@"
 fi
 
-$GREP -i -n --exclude-dir=js/ --exclude-dir=js-src/ --exclude-dir=*/doc/ --exclude-dir=*/t/ --exclude-dir=blib "$pattern" $Dir/**
+$GREP -i -n --exclude-dir=js/ --exclude-dir=js-src/ --exclude-dir=*/doc/ --exclude-dir=*/t/ --exclude-dir=blib "$pattern" $Dir/** 2>/dev/null
