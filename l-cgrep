@@ -5,6 +5,8 @@ clear;
 GREP='grep --color=always'
 which egrep &>/dev/null && GREP='egrep --color=always'
 
+shopt -s globstar
+
 setD() {
     Dir=${1:-unknowDIR};
 }
@@ -22,12 +24,12 @@ else
     pattern="$@"
 fi
 
-$GREP -i -rn \
+$GREP -i -n \
     --include=*.p[lm] \
     --exclude-dir=js/ \
     --exclude-dir=js-src/ \
     --exclude-dir=*/doc/ \
     --exclude-dir=*/t/ \
     --exclude-dir=blib \
-    "$pattern" $Dir/** | \
+    "$pattern" $Dir/** 2>/dev/null | \
         sed "s|$Dir/||"
