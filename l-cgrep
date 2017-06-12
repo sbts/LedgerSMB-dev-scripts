@@ -2,6 +2,9 @@
 
 clear;
 
+GREP='grep --color=always'
+which egrep &>/dev/null && GREP='egrep --color=always'
+
 setD() {
     Dir=${1:-unknowDIR};
 }
@@ -19,7 +22,7 @@ else
     pattern="$@"
 fi
 
-grep -i -rn \
+$GREP -i -rn \
     --include=*.p[lm] \
     --exclude-dir=js/ \
     --exclude-dir=js-src/ \
