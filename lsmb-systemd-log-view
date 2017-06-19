@@ -1,0 +1,13 @@
+#!/bin/bash
+
+SERVICEFILE='starman-ledgersmb.service'
+if ! [[ -r /etc/systemd/system/$SERVICEFILE ]]; then
+    SERVICEFILE='ledgersmb_starman.service'
+fi
+if ! [[ -r /etc/systemd/system/$SERVICEFILE ]]; then
+    echo "Can't find service file"
+    exit 9
+fi
+
+sudo journalctl -u $SERVICEFILE --since="today" -l -e
+
